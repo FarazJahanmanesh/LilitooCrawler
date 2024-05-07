@@ -5,5 +5,5 @@ public interface ILilitooServices
     Task GetSkinCareProduct();
     Task GetHairCareProduct();
     Task GetMouthAndToothProduct();
-    Task GetUncategorizedProduct();
+    Task<string> GetUncategorizedProduct();
 }
