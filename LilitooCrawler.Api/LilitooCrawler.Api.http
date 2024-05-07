@@ -1,0 +1,6 @@
+@LilitooCrawler.Api_HostAddress = http://localhost:5104
+
+GET {{LilitooCrawler.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
