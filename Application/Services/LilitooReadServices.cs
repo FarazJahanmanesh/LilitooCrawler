@@ -14,4 +14,13 @@ public class LilitooReadServices: ILilitooReadServices
 	{
         _lilitooServices = lilitooServices;
     }
+
+    public async Task<string> GetUncategorizedProduct()
+    {
+        var result = await _lilitooServices.GetUncategorizedProduct();
+        if(string.IsNullOrEmpty(result) || result == "problem to send request" ||  result == "problem to take content")
+            return result;
+
+        return "ok";
+    }
 }
