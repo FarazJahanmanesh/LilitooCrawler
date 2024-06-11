@@ -65,11 +65,11 @@ public class LilitooServices: ILilitooServices
                 {
                     IWebElement parentDiv = driver.FindElement(By.ClassName("elementor-product-simple"));
                     IWebElement childP = parentDiv.FindElement(By.CssSelector("p.stock.in-stock"));
-                    product.IsExsist = true;
+                    product.IsExist = true;
                 }
                 catch
                 {
-                    product.IsExsist = false;
+                    product.IsExist = false;
                 }
 
                 try
@@ -165,11 +165,11 @@ public class LilitooServices: ILilitooServices
                 {
                     IWebElement parentDiv = driver.FindElement(By.ClassName("elementor-product-simple"));
                     IWebElement childP = parentDiv.FindElement(By.CssSelector("p.stock.in-stock"));
-                    product.IsExsist = true;
+                    product.IsExist = true;
                 }
                 catch
                 {
-                    product.IsExsist = false;
+                    product.IsExist = false;
                 }
 
                 try
