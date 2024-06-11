@@ -14,6 +14,10 @@ public class LilitooReadServices: ILilitooReadServices
 	{
         _lilitooServices = lilitooServices;
     }
+    public async Task GetMouthAndToothProduct()
+    {
+        await _lilitooServices.GetMouthAndToothProduct();
+    }
 
     public async Task<string> GetUncategorizedProduct()
     {

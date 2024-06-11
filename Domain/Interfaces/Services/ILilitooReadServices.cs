@@ -7,5 +7,6 @@ using System.Threading.Tasks;
 namespace Domain.Interfaces.Services;
 public interface ILilitooReadServices
 {
+    Task GetMouthAndToothProduct();
     Task<string> GetUncategorizedProduct();
 }

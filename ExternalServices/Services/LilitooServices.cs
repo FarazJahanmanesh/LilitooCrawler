@@ -22,13 +22,30 @@ public class LilitooServices: ILilitooServices
     {
 
     }
-    //دهان و دندان
-    public async Task GetMouthAndToothProduct()
+    //لینک دهان و دندان
+    private async Task<List<string>> GetMouthAndToothProductsLinks()
     {
+        RestClient client = new RestClient("https://lilitoo.com/product-category/%d8%af%d9%87%d8%a7%d9%86-%d9%88-%d8%af%d9%86%d8%af%d8%a7%d9%86/");
+        RestRequest request = new RestRequest();
+        request.Method = Method.Get;
+        var response = await client.ExecuteAsync(request);
+        if (response.IsSuccessful)
+        {
+            var links = new List<string>();
+            var content = response.Content;
+            if (content != null)
+            {
+                HtmlDocument doc = new HtmlDocument();
+                doc.LoadHtml(response.Content);
 
+                HtmlNode linkNode = doc.DocumentNode.SelectSingleNode("//div[@class='product-element-bottom']//a");
+                string link = linkNode.GetAttributeValue("href", "");
+            }
+            return links; 
+        }
+        return null;
     }
     //لینک محصولات فاقد دسته
-    //private
     private async Task<string> GetUncategorizedProductsLink()
     {
         RestClient client = new RestClient("https://lilitoo.com/product-category/بدون-دستهبندی/");
@@ -61,6 +78,11 @@ public class LilitooServices: ILilitooServices
         }
     }
 
+
+    public async Task GetMouthAndToothProduct()
+    {
+        var links = await GetMouthAndToothProductsLinks();
+    }
     public async Task<string> GetUncategorizedProduct()
     {
         var links = await GetUncategorizedProductsLink();
@@ -89,6 +111,7 @@ public class LilitooServices: ILilitooServices
                         {
                             liTextList.Add(node.InnerText);
                         }
+                        //to do i should get the pic and price and name 
                     }
 
                     return "prroblem to get link";
