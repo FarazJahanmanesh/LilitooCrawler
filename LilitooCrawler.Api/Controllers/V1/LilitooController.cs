@@ -3,6 +3,7 @@ using ExternalServices.Services;
 using Microsoft.AspNetCore.Mvc;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
+using System.Net;
 
 namespace LilitooCrawler.Api.Controllers.V1;
 public class LilitooController : BaseController
@@ -59,33 +60,135 @@ public class LilitooController : BaseController
 
         return Ok();
     }
-    [HttpGet("hair-care")]
-    public async Task<IActionResult> GetDahan()
+    [HttpGet]
+    public async Task<IActionResult> GetDahanAndDandan()
     {
         IWebDriver driver = new ChromeDriver
         {
-            Url = "https://lilitoo.com/product-category/skin-care/"
+            Url = "https://lilitoo.com/product-category/makeup/"
         };
 
 
         List<object> list = new List<object>();
         List<string> pageLinks = new List<string>();
         List<string> productLinks = new List<string>();
+        List<TestResult> tests = new List<TestResult>();
 
-        IWebElement ulElement = driver.FindElement(By.ClassName("page-numbers"));
-        IList<IWebElement> anchorTags = ulElement.FindElements(By.CssSelector("a.page-numbers"));
-
-        foreach (IWebElement anchorTag in anchorTags)
+        try
         {
-            string href = anchorTag.GetAttribute("href");
-            pageLinks.Add(href);
-        }
-        pageLinks.Remove(pageLinks.Last());
+            IWebElement ulElement1 = driver.FindElement(By.ClassName("page-numbers"));
+            IList<IWebElement> anchorTags1 = ulElement1.FindElements(By.CssSelector("a.page-numbers"));
+            foreach (IWebElement anchorTag in anchorTags1)
+            {
+                string href = anchorTag.GetAttribute("href");
+                pageLinks.Add(href);
+            }
+            pageLinks.Remove(pageLinks.Last());
+            pageLinks.Add(driver.Url);
+            foreach (var link in pageLinks)
+            {
+                IReadOnlyCollection<IWebElement> elements = driver.FindElements(By.CssSelector(".product-element-bottom"));
+                foreach (var element in elements)
+                {
+                    IWebElement h3Element = element.FindElement(By.ClassName("wd-entities-title"));
+                    IWebElement anchorTag = h3Element.FindElement(By.TagName("a"));
 
-        foreach (var link in pageLinks)
+                    string hrefValue = anchorTag.GetAttribute("href");
+                    productLinks.Add(hrefValue);
+                }
+                driver.Url = link;
+            }
+
+            foreach (var link in productLinks)
+            {
+                driver.Url = link;
+                TestResult product = new TestResult();
+                IWebElement element = driver.FindElement(By.ClassName("breadcrumb-last"));
+                product.Name = element.Text;
+
+                var shortDescriptionDiv = driver.FindElement(By.ClassName("woocommerce-product-details__short-description"));
+
+                var ulElement = shortDescriptionDiv.FindElement(By.TagName("ul"));
+
+                var liElements = ulElement.FindElements(By.TagName("li"));
+
+                List<string> Description = new List<string>();
+                foreach (var liElement in liElements)
+                {
+                    if (!string.IsNullOrEmpty(liElement.Text))
+                        Description.Add(liElement.Text);
+                }
+                product.Description = Description;
+                try
+                {
+                    IWebElement parentDiv = driver.FindElement(By.ClassName("elementor-product-simple"));
+                    IWebElement childP = parentDiv.FindElement(By.CssSelector("p.stock.in-stock"));
+                    product.IsExsist = true;
+                }
+                catch
+                {
+                    product.IsExsist = false;
+                }
+
+                try
+                {
+                    IWebElement priceElement = driver.FindElement(By.CssSelector(".price"));
+
+                    string priceText = priceElement.Text;
+
+                    product.OldPrice = priceText.Split("تومان")[1].Trim();
+
+                    product.NewPrice = priceText.Split("تومان")[2].Trim();
+
+                    product.Price = priceText.Split("تومان")[2].Trim();
+                }
+                catch
+                {
+                    IWebElement priceElement = driver.FindElement(By.CssSelector(".price"));
+
+                    string priceText = priceElement.Text;
+
+                    product.Price = priceText.Split("تومان")[1].Trim();
+                }
+
+                try
+                {
+
+                    List<string> imagesUrl = new List<string>();
+                    List<string> images = new List<string>();
+
+                    IWebElement firstDiv = driver.FindElement(By.ClassName("wd-carousel-wrap"));
+                    IList<IWebElement> anchorTags = firstDiv.FindElements(By.TagName("a"));
+
+                    foreach (var anchor in anchorTags)
+                    {
+                        string href = anchor.GetAttribute("href");
+                        imagesUrl.Add(href);
+                    }
+
+                    foreach (string image in imagesUrl)
+                    {
+                        WebClient webClient = new WebClient();
+                        byte[] imageBytes = webClient.DownloadData(image);
+                        string base64String = Convert.ToBase64String(imageBytes);
+                        images.Add(base64String);
+                    }
+                    product.ImageUrls = imagesUrl;
+                    //product.Images = images;
+                }
+                catch
+                {
+                    product.Images = null;
+                }
+
+                tests.Add(product);
+
+            }
+        }
+        catch
         {
             IReadOnlyCollection<IWebElement> elements = driver.FindElements(By.CssSelector(".product-element-bottom"));
-            foreach(var element in elements)
+            foreach (var element in elements)
             {
                 IWebElement h3Element = element.FindElement(By.ClassName("wd-entities-title"));
                 IWebElement anchorTag = h3Element.FindElement(By.TagName("a"));
@@ -93,26 +196,107 @@ public class LilitooController : BaseController
                 string hrefValue = anchorTag.GetAttribute("href");
                 productLinks.Add(hrefValue);
             }
-            driver.Url = link;
-        }
 
-        foreach (var link in productLinks)
-        {
 
-            string Name = "";
-            List<string> Images = new List<string>();
-            List<string> Description = new List<string>();
-            string OldPrice="";
-            string NewPrice = "";
-            bool IsExsist = false;
-
-            IWebDriver driver2 = new ChromeDriver
+            foreach (var link in productLinks)
             {
-                Url = link
-            };
+                driver.Url = link;
+                TestResult product = new TestResult();
+                IWebElement element = driver.FindElement(By.ClassName("breadcrumb-last"));
+                product.Name = element.Text;
 
+                var shortDescriptionDiv = driver.FindElement(By.ClassName("woocommerce-product-details__short-description"));
+
+                var ulElement = shortDescriptionDiv.FindElement(By.TagName("ul"));
+
+                var liElements = ulElement.FindElements(By.TagName("li"));
+
+                List<string> Description = new List<string>();
+                foreach (var liElement in liElements)
+                {
+                    if (!string.IsNullOrEmpty(liElement.Text))
+                        Description.Add(liElement.Text);
+                }
+                product.Description = Description;
+                try
+                {
+                    IWebElement parentDiv = driver.FindElement(By.ClassName("elementor-product-simple"));
+                    IWebElement childP = parentDiv.FindElement(By.CssSelector("p.stock.in-stock"));
+                    product.IsExsist = true;
+                }
+                catch
+                {
+                    product.IsExsist = false;
+                }
+
+                try
+                {
+                    IWebElement priceElement = driver.FindElement(By.CssSelector(".price"));
+
+                    string priceText = priceElement.Text;
+
+                    product.OldPrice = priceText.Split("تومان")[1].Trim();
+
+                    product.NewPrice = priceText.Split("تومان")[2].Trim();
+
+                    product.Price = priceText.Split("تومان")[2].Trim();
+                }
+                catch
+                {
+                    IWebElement priceElement = driver.FindElement(By.CssSelector(".price"));
+
+                    string priceText = priceElement.Text;
+
+                    product.Price = priceText.Split("تومان")[1].Trim();
+                }
+
+                try
+                {
+
+                    List<string> imagesUrl = new List<string>();
+                    List<string> images = new List<string>();
+
+                    IWebElement firstDiv = driver.FindElement(By.ClassName("wd-carousel-wrap"));
+                    IList<IWebElement> anchorTags = firstDiv.FindElements(By.TagName("a"));
+
+                    foreach (var anchor in anchorTags)
+                    {
+                        string href = anchor.GetAttribute("href");
+                        imagesUrl.Add(href);
+                    }
+
+                    foreach (string image in imagesUrl)
+                    {
+                        WebClient webClient = new WebClient();
+                        byte[] imageBytes = webClient.DownloadData(image);
+                        string base64String = Convert.ToBase64String(imageBytes);
+                        images.Add(base64String);
+                    }
+                    product.ImageUrls = imagesUrl;
+                    //product.Images = images;
+                }
+                catch
+                {
+                    product.Images = null;
+                }
+
+                tests.Add(product);
+
+            }
         }
 
-        return Ok();
+
+        return Ok(tests);
     }
+}
+public class TestResult
+{
+    public string? Name { get; set; } //did
+    public string? Price { get; set; }//did
+    public string? OldPrice { get; set; }//did
+    public string? NewPrice { get; set; }//did
+    public bool? IsExsist { get; set; }//did
+    public List<string>? Images { get; set; }//did
+    public List<string>? ImageUrls { get; set; }//did
+    public List<string>? Description { get; set; }//did
 }
