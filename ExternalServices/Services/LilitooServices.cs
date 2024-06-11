@@ -18,9 +18,9 @@ public class LilitooServices: ILilitooServices
         try
         {
             List<string> pageLinks = new List<string>();
-            IWebElement ulElement1 = driver.FindElement(By.ClassName("page-numbers"));
-            IList<IWebElement> anchorTags1 = ulElement1.FindElements(By.CssSelector("a.page-numbers"));
-            foreach (IWebElement anchorTag in anchorTags1)
+            IWebElement pages = driver.FindElement(By.ClassName("page-numbers"));
+            IList<IWebElement> pagesTags = pages.FindElements(By.CssSelector("a.page-numbers"));
+            foreach (IWebElement anchorTag in pagesTags)
             {
                 string href = anchorTag.GetAttribute("href");
                 pageLinks.Add(href);
@@ -29,13 +29,13 @@ public class LilitooServices: ILilitooServices
             pageLinks.Add(driver.Url);
             foreach (var link in pageLinks)
             {
-                IReadOnlyCollection<IWebElement> elements = driver.FindElements(By.CssSelector(".product-element-bottom"));
-                foreach (var element in elements)
+                IReadOnlyCollection<IWebElement> products = driver.FindElements(By.CssSelector(".product-element-bottom"));
+                foreach (var element in products)
                 {
                     IWebElement h3Element = element.FindElement(By.ClassName("wd-entities-title"));
-                    IWebElement anchorTag = h3Element.FindElement(By.TagName("a"));
+                    IWebElement productslink = h3Element.FindElement(By.TagName("a"));
 
-                    string hrefValue = anchorTag.GetAttribute("href");
+                    string hrefValue = productslink.GetAttribute("href");
                     productLinks.Add(hrefValue);
                 }
                 driver.Url = link;
@@ -99,10 +99,10 @@ public class LilitooServices: ILilitooServices
                     List<string> imagesUrl = new List<string>();
                     List<string> images = new List<string>();
 
-                    IWebElement firstDiv = driver.FindElement(By.ClassName("wd-carousel-wrap"));
-                    IList<IWebElement> anchorTags = firstDiv.FindElements(By.TagName("a"));
+                    IWebElement imagesDiv = driver.FindElement(By.ClassName("wd-carousel-wrap"));
+                    IList<IWebElement> imagesTags = imagesDiv.FindElements(By.TagName("a"));
 
-                    foreach (var anchor in anchorTags)
+                    foreach (var anchor in imagesTags)
                     {
                         string href = anchor.GetAttribute("href");
                         imagesUrl.Add(href);
