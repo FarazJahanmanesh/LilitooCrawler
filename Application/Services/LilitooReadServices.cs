@@ -1,4 +1,5 @@
-﻿using Domain.Interfaces.ExternalServices;
+﻿using Domain.Entities;
+using Domain.Interfaces.ExternalServices;
 using Domain.Interfaces.Services;
 using System;
 using System.Collections.Generic;
@@ -14,17 +15,9 @@ public class LilitooReadServices: ILilitooReadServices
 	{
         _lilitooServices = lilitooServices;
     }
-    public async Task GetMouthAndToothProduct()
-    {
-        await _lilitooServices.GetMouthAndToothProduct();
-    }
 
-    public async Task<string> GetUncategorizedProduct()
+    public async Task<List<Product>> GetProducts(string url)
     {
-        var result = await _lilitooServices.GetUncategorizedProduct();
-        if(string.IsNullOrEmpty(result) || result == "problem to send request" ||  result == "problem to take content")
-            return result;
-
-        return "ok";
+        return _lilitooServices.GetProducts(url).Result;
     }
 }

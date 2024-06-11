@@ -7,21 +7,17 @@ using System.Net;
 namespace ExternalServices.Services;
 public class LilitooServices: ILilitooServices
 {
-    public async Task<List<Product>> GetProducts()
+    public async Task<List<Product>> GetProducts(string url)
     {
         IWebDriver driver = new ChromeDriver
         {
-            Url = "https://lilitoo.com/product-category/makeup/"
+            Url = url
         };
-
-
-        List<object> list = new List<object>();
-        List<string> pageLinks = new List<string>();
         List<string> productLinks = new List<string>();
         List<Product> Products = new List<Product>();
-
         try
         {
+            List<string> pageLinks = new List<string>();
             IWebElement ulElement1 = driver.FindElement(By.ClassName("page-numbers"));
             IList<IWebElement> anchorTags1 = ulElement1.FindElements(By.CssSelector("a.page-numbers"));
             foreach (IWebElement anchorTag in anchorTags1)
@@ -120,7 +116,7 @@ public class LilitooServices: ILilitooServices
                         images.Add(base64String);
                     }
                     product.ImageUrls = imagesUrl;
-                    //product.Images = images;
+                    product.Images = images;
                 }
                 catch
                 {
@@ -220,7 +216,7 @@ public class LilitooServices: ILilitooServices
                         images.Add(base64String);
                     }
                     product.ImageUrls = imagesUrl;
-                    //product.Images = images;
+                    product.Images = images;
                 }
                 catch
                 {
