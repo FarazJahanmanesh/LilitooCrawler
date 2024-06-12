@@ -108,19 +108,19 @@ public class LilitooServices: ILilitooServices
                         imagesUrl.Add(href);
                     }
 
-                    foreach (string image in imagesUrl)
-                    {
-                        WebClient webClient = new WebClient();
-                        byte[] imageBytes = webClient.DownloadData(image);
-                        string base64String = Convert.ToBase64String(imageBytes);
-                        images.Add(base64String);
-                    }
+                    //foreach (string image in imagesUrl)
+                    //{
+                    //    WebClient webClient = new WebClient();
+                    //    byte[] imageBytes = webClient.DownloadData(image);
+                    //    string base64String = Convert.ToBase64String(imageBytes);
+                    //    images.Add(base64String);
+                    //}
                     product.ImageUrls = imagesUrl;
-                    product.Images = images;
+                    //product.Images = images;
                 }
                 catch
                 {
-                    product.Images = null;
+                    //product.Images = null;
                 }
 
                 Products.Add(product);
@@ -208,19 +208,19 @@ public class LilitooServices: ILilitooServices
                         imagesUrl.Add(href);
                     }
 
-                    foreach (string image in imagesUrl)
-                    {
-                        WebClient webClient = new WebClient();
-                        byte[] imageBytes = webClient.DownloadData(image);
-                        string base64String = Convert.ToBase64String(imageBytes);
-                        images.Add(base64String);
-                    }
+                    //foreach (string image in imagesUrl)
+                    //{
+                    //    WebClient webClient = new WebClient();
+                    //    byte[] imageBytes = webClient.DownloadData(image);
+                    //    string base64String = Convert.ToBase64String(imageBytes);
+                    //    images.Add(base64String);
+                    //}
                     product.ImageUrls = imagesUrl;
-                    product.Images = images;
+                    //product.Images = images;
                 }
                 catch
                 {
-                    product.Images = null;
+                    //product.Images = null;
                 }
 
                 Products.Add(product);

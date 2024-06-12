@@ -6,7 +6,7 @@ public class Product
     public string? OldPrice { get; set; }
     public string? NewPrice { get; set; }
     public bool? IsExist { get; set; }
-    public List<string>? Images { get; set; }
+    //public List<string>? Images { get; set; }
     public List<string>? ImageUrls { get; set; }
     public List<string>? Description { get; set; }
 }
