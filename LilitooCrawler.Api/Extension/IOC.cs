@@ -1,6 +1,7 @@
 ﻿using Application.Services;
 using Domain.Interfaces.ExternalServices;
 using Domain.Interfaces.Services;
+using ExternalServices.Db;
 using ExternalServices.Services;
 
 namespace LilitooCrawler.Api.Extension;
@@ -21,5 +22,5 @@ public static class IOC
     {
         services.AddScoped<ILilitooReadServices, LilitooReadServices>();
         return services;
-    }
+    
 }

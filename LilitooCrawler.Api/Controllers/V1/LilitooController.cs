@@ -1,7 +1,9 @@
 ﻿using Domain.Common;
 using Domain.Entities;
 using Domain.Interfaces.Services;
+using ExternalServices.Db;
 using ExternalServices.Services;
+using LilitooCrawler.Api.File;
 using Microsoft.AspNetCore.Mvc;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
@@ -10,6 +12,7 @@ using System.Net;
 namespace LilitooCrawler.Api.Controllers.V1;
 public class LilitooController : BaseController
 {
+    private LilitooCrawlerBusiness business = new LilitooCrawlerBusiness();
     private readonly ILilitooReadServices _readServices;
     public LilitooController(ILilitooReadServices readServices)
     {
@@ -26,6 +29,10 @@ public class LilitooController : BaseController
             var result = await _readServices.GetProducts(url);
             if (result == null || result[0].Name == "" || result[0].Name == null)
                 throw new Exception("result is null");
+            foreach(var item in result)
+            {
+                business.InsertProduct(item);
+            }
             response.Data = new List<Product>();
             response.Data = result;
             response.Message = "success";
@@ -54,6 +61,10 @@ public class LilitooController : BaseController
             var result = await _readServices.GetProducts(url);
             if (result == null || result[0].Name == "" || result[0].Name == null)
                 throw new Exception("result is null");
+            foreach (var item in result)
+            {
+                business.InsertProduct(item);
+            }
             response.Data = new List<Product>();
             response.Data = result;
             response.Message = "success";
@@ -82,6 +93,10 @@ public class LilitooController : BaseController
             var result = await _readServices.GetProducts(url);
             if (result == null || result[0].Name == "" || result[0].Name == null)
                 throw new Exception("result is null");
+            foreach (var item in result)
+            {
+                business.InsertProduct(item);
+            }
             response.Data = new List<Product>();
             response.Data = result;
             response.Message = "success";
@@ -110,6 +125,10 @@ public class LilitooController : BaseController
             var result = await _readServices.GetProducts(url);
             if (result == null || result[0].Name == "" || result[0].Name == null)
                 throw new Exception("result is null");
+            foreach (var item in result)
+            {
+                business.InsertProduct(item);
+            }
             response.Data = new List<Product>();
             response.Data = result;
             response.Message = "success";
@@ -138,6 +157,10 @@ public class LilitooController : BaseController
             var result = await _readServices.GetProducts(url);
             if (result == null || result[0].Name == "" || result[0].Name == null)
                 throw new Exception("result is null");
+            foreach (var item in result)
+            {
+                business.InsertProduct(item);
+            }
             response.Data = new List<Product>();
             response.Data = result;
             response.Message = "success";
