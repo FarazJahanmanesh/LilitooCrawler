@@ -7,6 +7,8 @@ namespace ExternalServices.Db;
 
 public class LilitooCrawlerBusiness
 {
+    //you should create table for product 
+    //and a insert procedure
     public void InsertProduct(Product product)
     {
         SqlCommand command = null;
