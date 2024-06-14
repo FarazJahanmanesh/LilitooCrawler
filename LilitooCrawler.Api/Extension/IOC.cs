@@ -21,6 +21,7 @@ public static class IOC
     private static IServiceCollection RegisterServices(this IServiceCollection services)
     {
         services.AddScoped<ILilitooReadServices, LilitooReadServices>();
+        services.AddScoped <ILilitooCrawlerBusiness,LilitooCrawlerBusiness>();
         return services;
-    
+    }
 }

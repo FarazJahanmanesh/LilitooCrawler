@@ -1,47 +1,44 @@
 ﻿using Domain.Entities;
-using Microsoft.Data.SqlClient;
-using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
+using System.ComponentModel.DataAnnotations;
 
 namespace ExternalServices.Db;
 
-public class LilitooCrawlerBusiness
+public class LilitooCrawlerBusiness: ILilitooCrawlerBusiness
 {
-    //you should create table for product 
-    //and a insert procedure
+    private readonly LilitooCrawlerDbContext _context;
+
+    public LilitooCrawlerBusiness(LilitooCrawlerDbContext context)
+    {
+        _context = context;
+    }
     public void InsertProduct(Product product)
     {
-        SqlCommand command = null;
-        SqlDataReader reader = null;
-        try
+        ProductIns ins = new ProductIns()
         {
-            command = LilitooCrawlerConnection.Command("AZ.");//procedure name
-            command.Parameters["@Name"].Value = string.IsNullOrEmpty(product.Name) ? DBNull.Value : product.Name;
-            command.Parameters["@Price"].Value = string.IsNullOrEmpty(product.Price) ? DBNull.Value : product.Price;
-            command.Parameters["@OldPrice"].Value = string.IsNullOrEmpty(product.OldPrice) ? DBNull.Value : product.OldPrice;
-            command.Parameters["@NewPrice"].Value = string.IsNullOrEmpty(product.NewPrice) ? DBNull.Value : product.NewPrice;
-            command.Parameters["@IsExist"].Value = product.IsExist;
-            command.Parameters["@ImageUrls"].Value = string.IsNullOrEmpty(JsonConvert.SerializeObject(product.ImageUrls)) ? DBNull.Value : JsonConvert.SerializeObject(product.ImageUrls);
-            command.Parameters["@Description"].Value = string.IsNullOrEmpty(JsonConvert.SerializeObject(product.Description)) ? DBNull.Value : JsonConvert.SerializeObject(product.Description);
-            reader = command.ExecuteReader();
-        }
-        catch (Exception ex)
-        {
-            throw ex;
-        }
-        finally
-        {
-            if (reader != null)
-            {
-                reader.Close();
-                reader.Dispose();
-            }
-            if (command != null)
-            {
-                command.Connection.Close();
-                command.Connection.Dispose();
-                command.Dispose();
-            }
-        }
+            Name = product?.Name,
+            IsExist = product?.IsExist,
+            Description = JsonConvert.SerializeObject(product?.Description),
+            Price = product?.Price,
+            OldPrice = product?.OldPrice,
+            NewPrice = product?.NewPrice,
+            ImageUrls = JsonConvert.SerializeObject(product?.ImageUrls)
+        };
+
+        _context.Products.Add(ins);
+        _context.SaveChanges();
     }
+}
+public class ProductIns
+{
+    [Key]
+    public long Id { get; set; }
+    public string? Name { get; set; }
+    public string? Price { get; set; }
+    public string? OldPrice { get; set; }
+    public string? NewPrice { get; set; }
+    public bool? IsExist { get; set; }
+    //public List<string>? Images { get; set; }
+    public string? ImageUrls { get; set; }
+    public string? Description { get; set; }
 }

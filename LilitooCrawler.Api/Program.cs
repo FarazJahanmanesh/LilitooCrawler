@@ -1,4 +1,6 @@
+using ExternalServices.Db;
 using LilitooCrawler.Api.Extension;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,6 +11,14 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.RegisterIOC();
+
+
+var connectionString = builder.Configuration.GetConnectionString("LilitooCrawler");
+builder.Services.AddDbContext<LilitooCrawlerDbContext>(
+    options =>
+    {
+        options.UseSqlServer(connectionString);
+    });
 
 var app = builder.Build();
 

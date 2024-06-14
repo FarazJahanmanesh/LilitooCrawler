@@ -45,186 +45,224 @@ public class LilitooServices: ILilitooServices
             {
                 driver.Url = link;
                 Product product = new Product();
-                IWebElement element = driver.FindElement(By.ClassName("breadcrumb-last"));
-                product.Name = element.Text;
-
-                var shortDescriptionDiv = driver.FindElement(By.ClassName("woocommerce-product-details__short-description"));
-
-                var ulElement = shortDescriptionDiv.FindElement(By.TagName("ul"));
-
-                var liElements = ulElement.FindElements(By.TagName("li"));
-
-                List<string> Description = new List<string>();
-                foreach (var liElement in liElements)
-                {
-                    if (!string.IsNullOrEmpty(liElement.Text))
-                        Description.Add(liElement.Text);
-                }
-                product.Description = Description;
                 try
                 {
-                    IWebElement parentDiv = driver.FindElement(By.ClassName("elementor-product-simple"));
-                    IWebElement childP = parentDiv.FindElement(By.CssSelector("p.stock.in-stock"));
-                    product.IsExist = true;
-                }
-                catch
-                {
-                    product.IsExist = false;
-                }
+                    IWebElement element = driver.FindElement(By.ClassName("breadcrumb-last"));
+                    product.Name = element.Text;
 
-                try
-                {
-                    IWebElement priceElement = driver.FindElement(By.CssSelector(".price"));
+                    var shortDescriptionDiv = driver.FindElement(By.ClassName("woocommerce-product-details__short-description"));
 
-                    string priceText = priceElement.Text;
+                    var ulElement = shortDescriptionDiv.FindElement(By.TagName("ul"));
 
-                    product.OldPrice = priceText.Split("تومان")[1].Trim();
+                    var liElements = ulElement.FindElements(By.TagName("li"));
 
-                    product.NewPrice = priceText.Split("تومان")[2].Trim();
-
-                    product.Price = priceText.Split("تومان")[2].Trim();
-                }
-                catch
-                {
-                    IWebElement priceElement = driver.FindElement(By.CssSelector(".price"));
-
-                    string priceText = priceElement.Text;
-
-                    product.Price = priceText.Split("تومان")[1].Trim();
-                }
-
-                try
-                {
-
-                    List<string> imagesUrl = new List<string>();
-                    List<string> images = new List<string>();
-
-                    IWebElement imagesDiv = driver.FindElement(By.ClassName("wd-carousel-wrap"));
-                    IList<IWebElement> imagesTags = imagesDiv.FindElements(By.TagName("a"));
-
-                    foreach (var anchor in imagesTags)
+                    List<string> Description = new List<string>();
+                    foreach (var liElement in liElements)
                     {
-                        string href = anchor.GetAttribute("href");
-                        imagesUrl.Add(href);
+                        if (!string.IsNullOrEmpty(liElement.Text))
+                            Description.Add(liElement.Text);
+                    }
+                    product.Description = Description;
+                    try
+                    {
+                        IWebElement parentDiv = driver.FindElement(By.ClassName("elementor-product-simple"));
+                        IWebElement childP = parentDiv.FindElement(By.CssSelector("p.stock.in-stock"));
+                        product.IsExist = true;
+                    }
+                    catch
+                    {
+                        product.IsExist = false;
                     }
 
-                    //foreach (string image in imagesUrl)
-                    //{
-                    //    WebClient webClient = new WebClient();
-                    //    byte[] imageBytes = webClient.DownloadData(image);
-                    //    string base64String = Convert.ToBase64String(imageBytes);
-                    //    images.Add(base64String);
-                    //}
-                    product.ImageUrls = imagesUrl;
-                    //product.Images = images;
+                    try
+                    {
+                        IWebElement priceElement = driver.FindElement(By.CssSelector(".price"));
+
+                        string priceText = priceElement.Text;
+
+                        product.OldPrice = priceText.Split("تومان")[1].Trim();
+
+                        product.NewPrice = priceText.Split("تومان")[2].Trim();
+
+                        product.Price = priceText.Split("تومان")[2].Trim();
+                    }
+                    catch
+                    {
+                        IWebElement priceElement = driver.FindElement(By.CssSelector(".price"));
+
+                        string priceText = priceElement.Text;
+
+                        product.Price = priceText.Split("تومان")[1].Trim();
+                    }
+
+                    try
+                    {
+
+                        List<string> imagesUrl = new List<string>();
+                        List<string> images = new List<string>();
+
+                        IWebElement imagesDiv = driver.FindElement(By.ClassName("wd-carousel-wrap"));
+                        IList<IWebElement> imagesTags = imagesDiv.FindElements(By.TagName("a"));
+
+                        foreach (var anchor in imagesTags)
+                        {
+                            string href = anchor.GetAttribute("href");
+                            imagesUrl.Add(href);
+                        }
+
+                        //foreach (string image in imagesUrl)
+                        //{
+                        //    WebClient webClient = new WebClient();
+                        //    byte[] imageBytes = webClient.DownloadData(image);
+                        //    string base64String = Convert.ToBase64String(imageBytes);
+                        //    images.Add(base64String);
+                        //}
+                        product.ImageUrls = imagesUrl;
+                        //product.Images = images;
+                    }
+                    catch
+                    {
+                        //product.Images = null;
+                    }
+
+                    Products.Add(product);
+
                 }
                 catch
                 {
-                    //product.Images = null;
+                    //Product product = new Product()
+                    //{
+                    product.Description = new List<string> { "لینک این محصول در سایت اصلی دچار اشکال است" };
+                        product.Name = driver.Url;
+                    Products.Add(product);
+                    //return Products;
                 }
-
-                Products.Add(product);
-
             }
             return Products;
         }
         catch
         {
-            IReadOnlyCollection<IWebElement> elements = driver.FindElements(By.CssSelector(".product-element-bottom"));
-            foreach (var element in elements)
+            try
             {
-                IWebElement h3Element = element.FindElement(By.ClassName("wd-entities-title"));
-                IWebElement anchorTag = h3Element.FindElement(By.TagName("a"));
 
-                string hrefValue = anchorTag.GetAttribute("href");
-                productLinks.Add(hrefValue);
-            }
-
-
-            foreach (var link in productLinks)
-            {
-                driver.Url = link;
-                Product product = new Product();
-                IWebElement element = driver.FindElement(By.ClassName("breadcrumb-last"));
-                product.Name = element.Text;
-
-                var shortDescriptionDiv = driver.FindElement(By.ClassName("woocommerce-product-details__short-description"));
-
-                var ulElement = shortDescriptionDiv.FindElement(By.TagName("ul"));
-
-                var liElements = ulElement.FindElements(By.TagName("li"));
-
-                List<string> Description = new List<string>();
-                foreach (var liElement in liElements)
+                IReadOnlyCollection<IWebElement> elements = driver.FindElements(By.CssSelector(".product-element-bottom"));
+                foreach (var element in elements)
                 {
-                    if (!string.IsNullOrEmpty(liElement.Text))
-                        Description.Add(liElement.Text);
-                }
-                product.Description = Description;
-                try
-                {
-                    IWebElement parentDiv = driver.FindElement(By.ClassName("elementor-product-simple"));
-                    IWebElement childP = parentDiv.FindElement(By.CssSelector("p.stock.in-stock"));
-                    product.IsExist = true;
-                }
-                catch
-                {
-                    product.IsExist = false;
+                    IWebElement h3Element = element.FindElement(By.ClassName("wd-entities-title"));
+                    IWebElement anchorTag = h3Element.FindElement(By.TagName("a"));
+
+                    string hrefValue = anchorTag.GetAttribute("href");
+                    productLinks.Add(hrefValue);
                 }
 
-                try
+
+                foreach (var link in productLinks)
                 {
-                    IWebElement priceElement = driver.FindElement(By.CssSelector(".price"));
-
-                    string priceText = priceElement.Text;
-
-                    product.OldPrice = priceText.Split("تومان")[1].Trim();
-
-                    product.NewPrice = priceText.Split("تومان")[2].Trim();
-
-                    product.Price = priceText.Split("تومان")[2].Trim();
-                }
-                catch
-                {
-                    IWebElement priceElement = driver.FindElement(By.CssSelector(".price"));
-
-                    string priceText = priceElement.Text;
-
-                    product.Price = priceText.Split("تومان")[1].Trim();
-                }
-
-                try
-                {
-
-                    List<string> imagesUrl = new List<string>();
-                    List<string> images = new List<string>();
-
-                    IWebElement firstDiv = driver.FindElement(By.ClassName("wd-carousel-wrap"));
-                    IList<IWebElement> anchorTags = firstDiv.FindElements(By.TagName("a"));
-
-                    foreach (var anchor in anchorTags)
+                    driver.Url = link;
+                    Product product = new Product();
+                    try
                     {
-                        string href = anchor.GetAttribute("href");
-                        imagesUrl.Add(href);
+                        IWebElement element = driver.FindElement(By.ClassName("breadcrumb-last"));
+                        product.Name = element.Text;
+
+                        var shortDescriptionDiv = driver.FindElement(By.ClassName("woocommerce-product-details__short-description"));
+
+                        var ulElement = shortDescriptionDiv.FindElement(By.TagName("ul"));
+
+                        var liElements = ulElement.FindElements(By.TagName("li"));
+
+                        List<string> Description = new List<string>();
+                        foreach (var liElement in liElements)
+                        {
+                            if (!string.IsNullOrEmpty(liElement.Text))
+                                Description.Add(liElement.Text);
+                        }
+                        product.Description = Description;
+                        try
+                        {
+                            IWebElement parentDiv = driver.FindElement(By.ClassName("elementor-product-simple"));
+                            IWebElement childP = parentDiv.FindElement(By.CssSelector("p.stock.in-stock"));
+                            product.IsExist = true;
+                        }
+                        catch
+                        {
+                            product.IsExist = false;
+                        }
+
+                        try
+                        {
+                            IWebElement priceElement = driver.FindElement(By.CssSelector(".price"));
+
+                            string priceText = priceElement.Text;
+
+                            product.OldPrice = priceText.Split("تومان")[1].Trim();
+
+                            product.NewPrice = priceText.Split("تومان")[2].Trim();
+
+                            product.Price = priceText.Split("تومان")[2].Trim();
+                        }
+                        catch
+                        {
+                            IWebElement priceElement = driver.FindElement(By.CssSelector(".price"));
+
+                            string priceText = priceElement.Text;
+
+                            product.Price = priceText.Split("تومان")[1].Trim();
+                        }
+
+                        try
+                        {
+
+                            List<string> imagesUrl = new List<string>();
+                            List<string> images = new List<string>();
+
+                            IWebElement imagesDiv = driver.FindElement(By.ClassName("wd-carousel-wrap"));
+                            IList<IWebElement> imagesTags = imagesDiv.FindElements(By.TagName("a"));
+
+                            foreach (var anchor in imagesTags)
+                            {
+                                string href = anchor.GetAttribute("href");
+                                imagesUrl.Add(href);
+                            }
+
+                            //foreach (string image in imagesUrl)
+                            //{
+                            //    WebClient webClient = new WebClient();
+                            //    byte[] imageBytes = webClient.DownloadData(image);
+                            //    string base64String = Convert.ToBase64String(imageBytes);
+                            //    images.Add(base64String);
+                            //}
+                            product.ImageUrls = imagesUrl;
+                            //product.Images = images;
+                        }
+                        catch
+                        {
+                            //product.Images = null;
+                        }
+
+                        Products.Add(product);
+
                     }
-
-                    //foreach (string image in imagesUrl)
-                    //{
-                    //    WebClient webClient = new WebClient();
-                    //    byte[] imageBytes = webClient.DownloadData(image);
-                    //    string base64String = Convert.ToBase64String(imageBytes);
-                    //    images.Add(base64String);
-                    //}
-                    product.ImageUrls = imagesUrl;
-                    //product.Images = images;
+                    catch
+                    {
+                        //Product product = new Product()
+                        //{
+                        product.Description = new List<string> { "لینک این محصول در سایت اصلی دچار اشکال است" };
+                        product.Name = driver.Url;
+                        Products.Add(product);
+                        //return Products;
+                    }
                 }
-                catch
+                return Products;
+            }
+            catch
+            {
+                Product product = new Product()
                 {
-                    //product.Images = null;
-                }
-
+                    Description = new List<string> { "لینک این محصول در سایت اصلی دچار اشکال است"},
+                    Name = driver.Url
+                };
                 Products.Add(product);
-
             }
             return Products;
         }

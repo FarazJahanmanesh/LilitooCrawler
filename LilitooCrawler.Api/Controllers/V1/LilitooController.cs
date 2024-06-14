@@ -12,11 +12,13 @@ using System.Net;
 namespace LilitooCrawler.Api.Controllers.V1;
 public class LilitooController : BaseController
 {
-    private LilitooCrawlerBusiness business = new LilitooCrawlerBusiness();
+    private readonly ILilitooCrawlerBusiness business;
     private readonly ILilitooReadServices _readServices;
-    public LilitooController(ILilitooReadServices readServices)
+    public LilitooController(ILilitooReadServices readServices,
+        ILilitooCrawlerBusiness business)
     {
         _readServices = readServices;
+        this.business = business;
     }
 
     [HttpGet]
